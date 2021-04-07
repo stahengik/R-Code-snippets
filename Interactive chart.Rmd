@@ -1,0 +1,44 @@
+---
+title: "Interactive chart"
+output: html_notebook
+---
+
+
+
+```{r}
+library(plotly)
+m <- highlight_key(mpg)
+p <- ggplot(m, aes(displ, hwy)) + geom_point()
+gg <- highlight(ggplotly(p), "plotly_selected")
+crosstalk::bscols(gg, DT::datatable(m))
+```
+
+```{r}
+library(plotly)
+mtcars %>%
+  highlight_key(~cyl) %>%
+  plot_ly(
+    x = ~wt, y = ~mpg, text = ~cyl, mode = "markers+text", 
+    textposition = "top", hoverinfo = "x+y"
+  ) %>%
+  highlight(on = "plotly_hover", off = "plotly_doubleclick")
+```
+```{r}
+# load the `txhousing` dataset
+data(txhousing, package = "ggplot2")
+
+# declare `city` as the SQL 'query by' column
+tx <- highlight_key(txhousing, ~city)
+
+# initiate a plotly object
+base <- plot_ly(tx, color = I("black")) %>% 
+  group_by(city)
+
+# create a time series of median house price
+base %>%
+  group_by(city) %>%
+  add_lines(x = ~date, y = ~median)
+```
+
+
+
